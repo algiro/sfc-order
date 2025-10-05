@@ -1,0 +1,52 @@
+The file menuData.cjs contains meta info about a menu with different sections (cafes,te,bebidas,tostas,etc). 
+Each item contained in each section contain at least a name attribute in spanish language ("es") and in english language ("en") and a price.
+
+- Create a React application with a main page where you can choose 3 sections
+The first one is called "Tomar" (take orders) and the second one is called "Lista" (order list) and the third one is called "Mesas" (Tables)
+- The application will be used on mobile devices
+- Each selection should be made as quick as possible, so for example navigating should be done clicking on big buttons with the name of the section / sub section
+
+- The section "Tomar" should be used to take a new order from the customer at the table.
+- Clicking on "Tomar" should allow to specify the number of the table where the order belong and who (the operator) that is taking the order (selected from a list of users)
+- Then after the table will be selected will show the sub sections of the menu (cafes, te, bebidas, etc)
+- Clicking on one of these sections should allow to see and select on of the item present in the section.
+- Clicking on the item a new page will be showed where the operator / waiter can choose / add some details about the order
+	- each item contains it's own specific possible details to add and the waiter can also type some specific detail / customization that isn't in the list
+	- the custom details will be showed order by the frequency of usage, so the most used will be on the top
+	- for each menu section (cafes, te, bebidas, etc) set a default starting customization set.
+	- for example cafes could have as starting customization set: ["descafeinado","con avena","con soja","con almendra","sin lactosa", "oscuro","muy caliente", "clarito", "no tan caliente", "sin espuma", "mucha espuma"]
+	- the operator can choose more than one customization and then after selecting them click on "Confermar" (Confirm) button that will add the selected item to the order
+- In each page will be possible to go back to the previous section
+- Going back to the section where the table will be selected will be showed the list of the item ordered and in the case there is any item a button called "Enviar" will be showed and clicking on it the order will change it's internal status to "Confirmed" (Confirmed) and it should contains the Timestamp of when it has been sent / confirmed.
+- The order status will be defined using a state machine like for example:
+	- To Confirm 
+		=> Confirmed
+		=> Canceled
+	- Confirmed 
+		=> Prepared
+		=> Modified
+		=> Canceled
+
+
+
+- The section "Lista" allow another user (from the kitchen) to see each order in status of "Enviado" order by the timestamp when it has been sent
+- The user from the kitchen after selecting one of the order from the list can see all the ordered items with the eventually added customization details and clickin on each one of that can change its status using a state machine like for example:
+	- To Prepare
+		=> Preparing
+		=> Canceled
+	- Preparing
+		=> Prepared
+		=> Canceled
+
+- When all the items inside the order will be in status of "Prepared" the order status also will change automatically as "Prepared"
+
+- In the case the waiter add some new item to the order after it has already confirmed it creates a new order id with a different time stamp that will be handled in the right order by the kitchen
+	The new order will contains only the new item added
+
+- The section "Mesas" will allow to see all the items ordered by each table.
+
+- From a technical point of view please use TypeScript as scripting language
+- The interface must be clean and user friendly thinking mainly in be easy and quick to take orders and handle them from the kitchen.
+- Create this application in order that will use a very lightweight and customizable (in the future) persistency system to store orders
+- The application must run on a docker container, use docker compose if required
+- Create also a separate project / folder with Test Cases to test application functionality

@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 16px;
+  }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .mobile-button {
+    @apply w-full h-mobile-button text-mobile-xl font-semibold rounded-lg shadow-md transition-all duration-200 active:scale-95;
+  }
+  
+  .mobile-button-primary {
+    @apply mobile-button bg-primary-500 hover:bg-primary-600 text-white;
+  }
+  
+  .mobile-button-secondary {
+    @apply mobile-button bg-gray-200 hover:bg-gray-300 text-gray-800;
+  }
+  
+  .mobile-button-success {
+    @apply mobile-button bg-success-500 hover:bg-success-600 text-white;
+  }
+  
+  .mobile-button-warning {
+    @apply mobile-button bg-warning-500 hover:bg-warning-600 text-white;
+  }
+  
+  .mobile-button-error {
+    @apply mobile-button bg-error-500 hover:bg-error-600 text-white;
+  }
+  
+  .mobile-container {
+    @apply container mx-auto px-mobile-safe py-mobile-safe max-w-md;
+  }
+  
+  .mobile-grid {
+    @apply grid grid-cols-1 gap-4;
+  }
+  
+  .mobile-grid-2 {
+    @apply grid grid-cols-2 gap-4;
+  }
+  
+  .section-header {
+    @apply text-mobile-3xl font-bold text-center mb-6 text-gray-800;
+  }
+  
+  .order-item {
+    @apply bg-white rounded-lg shadow-md p-4 border border-gray-200;
+  }
+  
+  .status-badge {
+    @apply px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .status-to-confirm {
+    @apply status-badge bg-gray-100 text-gray-800;
+  }
+  
+  .status-confirmed {
+    @apply status-badge bg-primary-100 text-primary-800;
+  }
+  
+  .status-preparing {
+    @apply status-badge bg-warning-100 text-warning-800;
+  }
+  
+  .status-prepared {
+    @apply status-badge bg-success-100 text-success-800;
+  }
+  
+  .status-pagado {
+    @apply status-badge bg-green-100 text-green-800;
+  }
+  
+  .status-canceled {
+    @apply status-badge bg-error-100 text-error-800;
+  }
+}
