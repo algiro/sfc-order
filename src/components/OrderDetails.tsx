@@ -102,7 +102,6 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
                 <div className="text-right ml-4">
                   <div className={`status-badge mb-2 ${
                     item.status === 'TO_PREPARE' ? 'status-to-confirm' :
-                    item.status === 'PREPARING' ? 'status-confirmed' :
                     item.status === 'PREPARED' ? 'status-prepared' : 'status-canceled'
                   }`}>
                     {getItemStatusText(item.status, language)}
@@ -115,9 +114,9 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
                           key={transition}
                           onClick={() => handleUpdateItemStatus(item.id, transition)}
                           className={`w-full text-xs py-1 px-2 rounded font-medium ${
-                            transition === 'PREPARING' ? 'bg-warning-500 hover:bg-warning-600 text-white' :
                             transition === 'PREPARED' ? 'bg-success-500 hover:bg-success-600 text-white' :
-                            'bg-error-500 hover:bg-error-600 text-white'
+                            transition === 'CANCELED' ? 'bg-error-500 hover:bg-error-600 text-white' :
+                            'bg-primary-500 hover:bg-primary-600 text-white'
                           }`}
                         >
                           {getItemStatusText(transition, language)}
@@ -203,13 +202,11 @@ function getItemStatusText(status: string, language: string): string {
   const statusTexts = {
     es: {
       'TO_PREPARE': 'Por Preparar',
-      'PREPARING': 'Preparando',
       'PREPARED': 'Preparado',
       'CANCELED': 'Cancelado'
     },
     en: {
       'TO_PREPARE': 'To Prepare',
-      'PREPARING': 'Preparing',
       'PREPARED': 'Prepared',
       'CANCELED': 'Canceled'
     }

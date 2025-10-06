@@ -2,7 +2,7 @@
 export type OrderStatus = 'TO_CONFIRM' | 'CONFIRMED' | 'PREPARED' | 'PAGADO' | 'MODIFIED' | 'CANCELED';
 
 // Item Status State Machine
-export type ItemStatus = 'TO_PREPARE' | 'PREPARING' | 'PREPARED' | 'CANCELED';
+export type ItemStatus = 'TO_PREPARE' | 'PREPARED' | 'CANCELED';
 
 // User roles
 export type UserRole = 'WAITER' | 'KITCHEN';
@@ -81,8 +81,7 @@ export const ORDER_STATUS_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
 };
 
 export const ITEM_STATUS_TRANSITIONS: Record<ItemStatus, ItemStatus[]> = {
-  TO_PREPARE: ['PREPARING', 'CANCELED'],
-  PREPARING: ['PREPARED', 'CANCELED'],
+  TO_PREPARE: ['PREPARED', 'CANCELED'],
   PREPARED: [],
   CANCELED: [],
 };
