@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { v4 as uuidv4 } from 'uuid';
-import { Order, OrderItem, OrderStatus, ItemStatus, User, Language, MenuItem, MenuCategory } from '@/types';
+import { Order, OrderItem, OrderStatus, ItemStatus, User, Language, MenuItem, MenuCategory, Fruit, APICategoryResponse } from '@/types';
 
 interface AppState {
   // Language
@@ -21,6 +21,11 @@ interface AppState {
   // Menu
   menuCategories: MenuCategory[];
   setMenuCategories: (categories: MenuCategory[]) => void;
+  loadMenuCategoriesFromAPI: () => Promise<void>;
+  
+  // Fruits
+  fruits: Fruit[];
+  loadFruitsFromAPI: () => Promise<void>;
   
   // Orders
   orders: Order[];
@@ -91,6 +96,38 @@ export const useAppStore = create<AppState>()(
       // Menu
       menuCategories: [],
       setMenuCategories: (categories) => set({ menuCategories: categories }),
+      loadMenuCategoriesFromAPI: async () => {
+        try {
+          console.log('Loading menu categories from API...');
+          const { categories }: { categories: APICategoryResponse[] } = await import('@/services/api').then(mod => mod.default.getMenuCategories());
+          console.log('Raw categories from API:', categories);
+          // Transform API categories to match frontend interface
+          const transformedCategories: MenuCategory[] = categories.map(apiCategory => ({
+            id: apiCategory.id,
+            name: {
+              es: apiCategory.name_es || apiCategory.id,
+              en: apiCategory.name_en || apiCategory.id,
+            },
+            items: [], // Items will be loaded when category is selected
+            defaultCustomizations: apiCategory.default_customizations || []
+          }));
+          console.log('Transformed categories for frontend:', transformedCategories);
+          set({ menuCategories: transformedCategories });
+        } catch (error) {
+          console.error('Failed to load menu categories from API:', error);
+        }
+      },
+      
+      // Fruits
+      fruits: [],
+      loadFruitsFromAPI: async () => {
+        try {
+          const { fruits } = await import('@/services/api').then(mod => mod.default.getFruits());
+          set({ fruits });
+        } catch (error) {
+          console.error('Failed to load fruits from API:', error);
+        }
+      },
       
       // Orders
       orders: [],
@@ -274,10 +311,10 @@ export const useAppStore = create<AppState>()(
       name: 'sfc-order-storage',
       partialize: (state) => ({
         language: state.language,
-        // Don't persist users - always fetch from API
+        // Don't persist users or menuCategories - always fetch from API
         // users: state.users,
+        // menuCategories: state.menuCategories,
         orders: state.orders,
-        menuCategories: state.menuCategories,
       }),
     }
   )

@@ -13,17 +13,17 @@ import apiService from '@/services/api';
 export default function Home() {
   const [currentSection, setCurrentSection] = useState<MainSection | null>(null);
   const [debugMode, setDebugMode] = useState(false);
-  const { setMenuCategories, language, setLanguage, loadUsersFromAPI, loadTablesFromAPI, users, tables } = useAppStore();
+  const { setMenuCategories, language, setLanguage, loadUsersFromAPI, loadTablesFromAPI, loadMenuCategoriesFromAPI, users, tables, menuCategories } = useAppStore();
 
   useEffect(() => {
-    // Initialize menu categories
-    setMenuCategories(MENU_CATEGORIES);
-    
     // Load data from backend API
     console.log('Loading data from API...');
     loadUsersFromAPI();
     loadTablesFromAPI();
-  }, [setMenuCategories, loadUsersFromAPI, loadTablesFromAPI]);
+    loadMenuCategoriesFromAPI().then(() => {
+      console.log('Menu categories loaded from API');
+    });
+  }, [loadUsersFromAPI, loadTablesFromAPI, loadMenuCategoriesFromAPI]);
 
   const clearStorageAndReload = () => {
     localStorage.clear();
@@ -142,6 +142,13 @@ export default function Home() {
                 ))}
               </div>
               
+              <div className="mb-2">
+                <strong>Menu Categories ({menuCategories.length}):</strong>
+                {menuCategories.map(c => (
+                  <div key={c.id} className="ml-2">• {c.id}: {c.name.es}</div>
+                ))}
+              </div>
+              
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={loadUsersFromAPI}
@@ -154,6 +161,12 @@ export default function Home() {
                   className="px-2 py-1 bg-green-500 text-white rounded text-xs"
                 >
                   Reload Tables
+                </button>
+                <button
+                  onClick={loadMenuCategoriesFromAPI}
+                  className="px-2 py-1 bg-purple-500 text-white rounded text-xs"
+                >
+                  Reload Menu
                 </button>
                 <button
                   onClick={clearStorageAndReload}

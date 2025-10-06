@@ -18,6 +18,12 @@ export interface Table {
   name: string;
 }
 
+export interface Fruit {
+  id: string;
+  name_es: string;
+  name_en: string;
+}
+
 export interface MenuItem {
   id: string;
   name: {
@@ -27,6 +33,13 @@ export interface MenuItem {
   price: number;
   category: string;
   customizations?: string[];
+  description?: {
+    es: string;
+    en: string;
+  };
+  available?: boolean;
+  customization_type?: string;
+  predefined_recipe?: string[];
 }
 
 export interface OrderItemCustomization {
@@ -73,6 +86,34 @@ export interface MenuCategory {
   };
   items: MenuItem[];
   defaultCustomizations: string[];
+}
+
+// API Response interfaces (different format from frontend)
+export interface APICategoryResponse {
+  id: string;
+  name_es: string;
+  name_en: string;
+  default_customizations?: string[];
+  customization_type?: string;
+  base_ingredients?: any[];
+  cereals?: any[];
+  fruit_selection_count?: number;
+  predefined_options?: any[];
+  sizes?: any[];
+  custom_combination?: any;
+}
+
+export interface APIItemResponse {
+  id: string;
+  category_id: string;
+  name_es: string;
+  name_en: string;
+  price: number;
+  description_es?: string;
+  description_en?: string;
+  available?: boolean;
+  customization_type?: string;
+  predefined_recipe?: string[];
 }
 
 // State machine transitions

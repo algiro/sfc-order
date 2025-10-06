@@ -9,6 +9,7 @@ const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const MENU_FILE = path.join(DATA_DIR, 'menu.json');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
 const TABLES_FILE = path.join(DATA_DIR, 'tables.json');
+const FRUITS_FILE = path.join(DATA_DIR, 'fruits.json');
 
 class JSONDatabase {
     constructor() {
@@ -347,6 +348,11 @@ class JSONDatabase {
 
         this.writeFile(TABLES_FILE, filteredTables);
         return { message: 'Table deleted successfully' };
+    }
+
+    // Fruits API
+    async getFruits() {
+        return this.readFile(FRUITS_FILE) || [];
     }
 
     // Analytics API

@@ -52,7 +52,9 @@ function getCategoryIcon(categoryId: string): string {
     te: '🍵',
     bebidas: '🥤',
     tostas: '🍞',
-    arepas: '🫓'
+    arepas: '🫓',
+    cuencos: '🥣',
+    smoothies: '🥤'
   };
   return icons[categoryId] || '🍽️';
 }

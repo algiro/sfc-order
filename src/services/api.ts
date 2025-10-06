@@ -1,4 +1,4 @@
-import { Order, OrderItem, User, MenuItem, MenuCategory } from '../types';
+import { Order, OrderItem, User, MenuItem, MenuCategory, Fruit, APICategoryResponse, APIItemResponse } from '../types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -120,13 +120,34 @@ class APIService {
   }
 
   // Menu API
-  async getMenuCategories(): Promise<{ categories: MenuCategory[] }> {
-    return this.request<{ categories: MenuCategory[] }>('/menu/categories');
+  async getMenuCategories(): Promise<{ categories: APICategoryResponse[] }> {
+    return this.request<{ categories: APICategoryResponse[] }>('/menu/categories');
   }
 
   async getMenuItems(categoryId?: string): Promise<{ items: MenuItem[] }> {
     const endpoint = categoryId ? `/menu/items/${categoryId}` : '/menu/items';
-    return this.request<{ items: MenuItem[] }>(endpoint);
+    const response = await this.request<{ items: APIItemResponse[] }>(endpoint);
+    
+    // Transform API response to frontend format
+    const transformedItems: MenuItem[] = response.items.map(apiItem => ({
+      id: apiItem.id,
+      name: {
+        es: apiItem.name_es,
+        en: apiItem.name_en,
+      },
+      price: apiItem.price,
+      category: apiItem.category_id,
+      customizations: [],
+      description: apiItem.description_es && apiItem.description_en ? {
+        es: apiItem.description_es,
+        en: apiItem.description_en,
+      } : undefined,
+      available: apiItem.available,
+      customization_type: apiItem.customization_type,
+      predefined_recipe: apiItem.predefined_recipe,
+    }));
+    
+    return { items: transformedItems };
   }
 
   async updateItemAvailability(itemId: string, available: boolean): Promise<{ message: string }> {
@@ -168,6 +189,11 @@ class APIService {
     return this.request<{ message: string }>(`/tables/${id}`, {
       method: 'DELETE',
     });
+  }
+
+  // Fruits API
+  async getFruits(): Promise<{ fruits: Fruit[] }> {
+    return this.request<{ fruits: Fruit[] }>('/fruits');
   }
 
   // Analytics API
