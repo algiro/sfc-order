@@ -27,12 +27,13 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - DATABASE_PATH=/app/data/orders.db
+      - DATABASE_PATH=/app/data
       - FRONTEND_URL=http://localhost:3000
     volumes:
       - ./backend:/app
       - /app/node_modules
-      - sfc_order_data:/app/data
+      # Bind mount to Windows directory for easy access
+      - ./database:/app/data
     restart: unless-stopped
     
   # Development services
@@ -55,6 +56,6 @@ services:
     profiles:
       - dev
 
-volumes:
-  sfc_order_data:
-    driver: local
+# Remove named volume - using Windows bind mount instead
+# volumes:
+#   sfc_order_data:

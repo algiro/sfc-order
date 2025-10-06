@@ -38,7 +38,9 @@ lerna-debug.log*
 .env.production.local
 .env*.local
 
-# Database files
+# Database files (keep directory, ignore data)
+database/*.json
+!database/README.md
 *.db
 *.sqlite
 *.sqlite3
@@ -89,3 +91,6 @@ public/manifest.json
 # Temporary files
 .tmp/
 .temp/
+
+# Backup directories
+database-backups/
