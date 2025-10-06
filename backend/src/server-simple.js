@@ -13,6 +13,7 @@ const ordersRoutes = require('./routes/orders-simple');
 const usersRoutes = require('./routes/users-simple');
 const menuRoutes = require('./routes/menu-simple');
 const analyticsRoutes = require('./routes/analytics-simple');
+const tablesRoutes = require('./routes/tables');
 
 class SFCOrderServer {
     constructor() {
@@ -94,6 +95,7 @@ class SFCOrderServer {
         this.app.use('/api/users', usersRoutes);
         this.app.use('/api/menu', menuRoutes);
         this.app.use('/api/analytics', analyticsRoutes);
+        this.app.use('/api/tables', tablesRoutes);
 
         // 404 handler
         this.app.use('*', (req, res) => {

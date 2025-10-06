@@ -12,18 +12,20 @@ echo 2. Backup Database
 echo 3. View Orders (JSON)
 echo 4. View Users (JSON)
 echo 5. View Menu (JSON)
-echo 6. Clear All Data (DANGER!)
-echo 7. Exit
+echo 6. View Tables (JSON)
+echo 7. Clear All Data (DANGER!)
+echo 8. Exit
 echo.
-set /p choice="Choose an option (1-7): "
+set /p choice="Choose an option (1-8): "
 
 if "%choice%"=="1" goto view_files
 if "%choice%"=="2" goto backup
 if "%choice%"=="3" goto view_orders
 if "%choice%"=="4" goto view_users
 if "%choice%"=="5" goto view_menu
-if "%choice%"=="6" goto clear_data
-if "%choice%"=="7" goto exit
+if "%choice%"=="6" goto view_tables
+if "%choice%"=="7" goto clear_data
+if "%choice%"=="8" goto exit
 goto menu
 
 :view_files
@@ -82,6 +84,19 @@ if exist database\menu.json (
     type database\menu.json
 ) else (
     echo No menu file found.
+)
+echo.
+pause
+goto menu
+
+:view_tables
+cls
+echo Current Tables:
+echo ===============
+if exist database\tables.json (
+    type database\tables.json
+) else (
+    echo No tables file found.
 )
 echo.
 pause

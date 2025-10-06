@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
-import { User } from '@/types';
+import { User, Table } from '@/types';
 import MenuCategoryGrid from './MenuCategoryGrid';
 import OrderSummary from './OrderSummary';
 
@@ -15,6 +15,7 @@ export default function TomarSection() {
   const { 
     language, 
     users, 
+    tables,
     currentOrder, 
     createOrder, 
     resetCurrentOrder,
@@ -23,8 +24,10 @@ export default function TomarSection() {
 
   const waiters = users.filter(user => user.role === 'WAITER');
 
-  const handleTableSelection = (table: number) => {
-    setTableNumber(table);
+  const handleTableSelection = (tableId: string | number) => {
+    // Convert table ID to number for backward compatibility with existing order system
+    const tableNum = typeof tableId === 'number' ? tableId : parseInt(tableId.toString().replace(/\D/g, '')) || 1;
+    setTableNumber(tableNum);
     setStep('waiter');
   };
 
@@ -56,15 +59,16 @@ export default function TomarSection() {
         </h2>
         
         <div className="grid grid-cols-3 gap-4">
-          {Array.from({ length: 20 }, (_, i) => i + 1).map(table => (
+          {tables.map((table: Table) => (
             <button
-              key={table}
-              onClick={() => handleTableSelection(table)}
+              key={table.id}
+              onClick={() => handleTableSelection(table.id)}
               className="mobile-button-primary aspect-square"
             >
               <div className="text-center">
                 <div className="text-2xl mb-1">🍽️</div>
-                <div className="text-lg font-bold">{table}</div>
+                <div className="text-sm font-bold">{table.name}</div>
+                <div className="text-xs opacity-75">{table.id}</div>
               </div>
             </button>
           ))}

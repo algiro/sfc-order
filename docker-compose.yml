@@ -30,9 +30,7 @@ services:
       - DATABASE_PATH=/app/data
       - FRONTEND_URL=http://localhost:3000
     volumes:
-      - ./backend:/app
-      - /app/node_modules
-      # Bind mount to Windows directory for easy access
+      # Bind mount only the database directory to Windows location
       - ./database:/app/data
     restart: unless-stopped
     

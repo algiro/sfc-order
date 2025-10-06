@@ -136,6 +136,40 @@ class APIService {
     });
   }
 
+  // Tables API
+  async getTables(): Promise<{ tables: Array<{ id: string; name: string }> }> {
+    const tables = await this.request<Array<{ id: string; name: string }>>('/tables');
+    return { tables };
+  }
+
+  async getTable(id: string): Promise<{ table: { id: string; name: string } }> {
+    const table = await this.request<{ id: string; name: string }>(`/tables/${id}`);
+    return { table };
+  }
+
+  async createTable(tableData: {
+    id: string;
+    name: string;
+  }): Promise<{ id: string }> {
+    return this.request<{ id: string }>('/tables', {
+      method: 'POST',
+      body: JSON.stringify(tableData),
+    });
+  }
+
+  async updateTable(id: string, tableData: { name: string }): Promise<{ message: string }> {
+    return this.request<{ message: string }>(`/tables/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(tableData),
+    });
+  }
+
+  async deleteTable(id: string): Promise<{ message: string }> {
+    return this.request<{ message: string }>(`/tables/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   // Analytics API
   async getAnalyticsSummary(date?: string): Promise<{
     date: string;

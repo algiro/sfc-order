@@ -3,13 +3,13 @@
 import { useAppStore } from '@/store/useAppStore';
 import { useState, useEffect } from 'react';
 import OrderDetails from './OrderDetails';
-import { Order, ORDER_STATUS_TRANSITIONS } from '@/types';
+import { Order, ORDER_STATUS_TRANSITIONS, Table } from '@/types';
 
 export default function MesasSection() {
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const { orders, language, markOrderAsPaid } = useAppStore();
+  const { orders, tables, language, markOrderAsPaid } = useAppStore();
   
   // Force refresh when orders change
   useEffect(() => {
@@ -25,12 +25,11 @@ export default function MesasSection() {
     ).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   };
   
-  // Get all active tables (excluding paid and canceled)
-  const activeTables = Array.from(new Set(
-    orders
-      .filter(order => order.status !== 'CANCELED' && order.status !== 'PAGADO')
-      .map(order => order.tableNumber)
-  )).sort((a, b) => a - b);
+  // Get all available tables from API and their status
+  const availableTables = tables.map(table => {
+    const tableNum = parseInt(table.id.replace(/\D/g, '')) || 1;
+    return { ...table, number: tableNum };
+  }).sort((a, b) => a.number - b.number);
   
   const getTotalForTable = (tableNumber: number) => {
     const tableOrders = getTableOrders(tableNumber);
@@ -178,33 +177,41 @@ export default function MesasSection() {
         {language === 'es' ? 'Estado de las Mesas' : 'Table Status'}
       </h2>
       
-      {activeTables.length === 0 ? (
+      {availableTables.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-mobile-lg text-gray-500">
-            {language === 'es' ? 'No hay mesas activas' : 'No active tables'}
+            {language === 'es' ? 'No hay mesas configuradas' : 'No tables configured'}
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
-          {activeTables.map((tableNumber, tableIndex) => {
-            const tableOrders = getTableOrders(tableNumber);
-            const tableTotal = getTotalForTable(tableNumber);
+          {availableTables.map((table, tableIndex) => {
+            const tableOrders = getTableOrders(table.number);
+            const tableTotal = getTotalForTable(table.number);
             const activeOrders = tableOrders.filter(order => order.status !== 'PREPARED').length;
+            const hasActiveOrders = activeOrders > 0;
             
             return (
               <button
-                key={`table-${tableNumber}-${refreshKey}-${tableIndex}`}
-                onClick={() => setSelectedTable(tableNumber)}
-                className="mobile-button-primary p-4 h-auto aspect-square flex flex-col justify-center items-center"
+                key={`table-${table.id}-${refreshKey}-${tableIndex}`}
+                onClick={() => setSelectedTable(table.number)}
+                className={`p-4 h-auto aspect-square flex flex-col justify-center items-center ${
+                  hasActiveOrders 
+                    ? 'mobile-button-warning' 
+                    : 'mobile-button-success opacity-50'
+                }`}
               >
                 <div className="text-3xl mb-2">🍽️</div>
-                <div className="text-mobile-xl font-bold mb-1">{tableNumber}</div>
+                <div className="text-mobile-lg font-bold mb-1">{table.name}</div>
+                <div className="text-xs opacity-90 mb-1">{table.id}</div>
                 <div className="text-sm opacity-90">
                   {activeOrders} {language === 'es' ? 'activos' : 'active'}
                 </div>
-                <div className="text-sm font-bold mt-1">
-                  €{tableTotal.toFixed(2)}
-                </div>
+                {tableTotal > 0 && (
+                  <div className="text-sm font-bold mt-1">
+                    €{tableTotal.toFixed(2)}
+                  </div>
+                )}
               </button>
             );
           })}

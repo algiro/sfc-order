@@ -6,6 +6,7 @@ This directory contains the JSON database files for the restaurant ordering syst
 - `orders.json` - All customer orders with status tracking
 - `users.json` - Waiter and staff information
 - `menu.json` - Menu categories and items
+- `tables.json` - Restaurant tables with ID and names
 - `settings.json` - Application preferences
 
 ## Location:

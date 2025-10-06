@@ -12,6 +12,11 @@ interface AppState {
   users: User[];
   currentUser: User | null;
   setCurrentUser: (user: User) => void;
+  loadUsersFromAPI: () => Promise<void>;
+  
+  // Tables
+  tables: Array<{ id: string; name: string }>;
+  loadTablesFromAPI: () => Promise<void>;
   
   // Menu
   menuCategories: MenuCategory[];
@@ -62,6 +67,26 @@ export const useAppStore = create<AppState>()(
       users: defaultUsers,
       currentUser: null,
       setCurrentUser: (user) => set({ currentUser: user }),
+      loadUsersFromAPI: async () => {
+        try {
+          const { users } = await import('@/services/api').then(mod => mod.default.getUsers());
+          set({ users });
+        } catch (error) {
+          console.error('Failed to load users from API:', error);
+          // Keep default users if API fails
+        }
+      },
+      
+      // Tables
+      tables: [],
+      loadTablesFromAPI: async () => {
+        try {
+          const { tables } = await import('@/services/api').then(mod => mod.default.getTables());
+          set({ tables });
+        } catch (error) {
+          console.error('Failed to load tables from API:', error);
+        }
+      },
       
       // Menu
       menuCategories: [],
@@ -249,7 +274,8 @@ export const useAppStore = create<AppState>()(
       name: 'sfc-order-storage',
       partialize: (state) => ({
         language: state.language,
-        users: state.users,
+        // Don't persist users - always fetch from API
+        // users: state.users,
         orders: state.orders,
         menuCategories: state.menuCategories,
       }),

@@ -8,6 +8,7 @@ const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const MENU_FILE = path.join(DATA_DIR, 'menu.json');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
+const TABLES_FILE = path.join(DATA_DIR, 'tables.json');
 
 class JSONDatabase {
     constructor() {
@@ -77,6 +78,25 @@ class JSONDatabase {
                 items: []
             };
             this.writeFile(MENU_FILE, defaultMenu);
+        }
+
+        // Initialize tables file
+        if (!fs.existsSync(TABLES_FILE)) {
+            const defaultTables = [
+                { id: 'T01', name: 'Mesa 1' },
+                { id: 'T02', name: 'Mesa 2' },
+                { id: 'T03', name: 'Mesa 3' },
+                { id: 'T04', name: 'Mesa 4' },
+                { id: 'T05', name: 'Mesa 5' },
+                { id: 'T06', name: 'Mesa 6' },
+                { id: 'T07', name: 'Mesa 7' },
+                { id: 'T08', name: 'Mesa 8' },
+                { id: 'T09', name: 'Mesa 9' },
+                { id: 'T10', name: 'Mesa 10' },
+                { id: 'BAR', name: 'Barra' },
+                { id: 'TER', name: 'Terraza' }
+            ];
+            this.writeFile(TABLES_FILE, defaultTables);
         }
 
         // Initialize settings file
@@ -279,6 +299,56 @@ class JSONDatabase {
         return menu.items.filter(item => item.available);
     }
 
+    // Tables API
+    async getAllTables() {
+        return this.readFile(TABLES_FILE) || [];
+    }
+
+    async getTable(id) {
+        const tables = this.readFile(TABLES_FILE) || [];
+        return tables.find(table => table.id === id);
+    }
+
+    async createTable(tableData) {
+        const tables = this.readFile(TABLES_FILE) || [];
+        
+        const newTable = {
+            id: tableData.id,
+            name: tableData.name
+        };
+
+        tables.push(newTable);
+        this.writeFile(TABLES_FILE, tables);
+
+        return { id: newTable.id };
+    }
+
+    async updateTable(id, tableData) {
+        const tables = this.readFile(TABLES_FILE) || [];
+        const tableIndex = tables.findIndex(table => table.id === id);
+        
+        if (tableIndex === -1) {
+            throw new Error('Table not found');
+        }
+
+        tables[tableIndex] = { ...tables[tableIndex], ...tableData };
+        this.writeFile(TABLES_FILE, tables);
+
+        return { message: 'Table updated successfully' };
+    }
+
+    async deleteTable(id) {
+        const tables = this.readFile(TABLES_FILE) || [];
+        const filteredTables = tables.filter(table => table.id !== id);
+        
+        if (filteredTables.length === tables.length) {
+            throw new Error('Table not found');
+        }
+
+        this.writeFile(TABLES_FILE, filteredTables);
+        return { message: 'Table deleted successfully' };
+    }
+
     // Analytics API
     async getAnalyticsSummary(date) {
         const targetDate = date || new Date().toISOString().split('T')[0];
@@ -318,6 +388,7 @@ class JSONDatabase {
                 users: this.readFile(USERS_FILE),
                 menu: this.readFile(MENU_FILE),
                 settings: this.readFile(SETTINGS_FILE),
+                tables: this.readFile(TABLES_FILE),
                 backup_date: new Date().toISOString()
             };
             

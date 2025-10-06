@@ -13,6 +13,11 @@ export interface User {
   role: UserRole;
 }
 
+export interface Table {
+  id: string;
+  name: string;
+}
+
 export interface MenuItem {
   id: string;
   name: {
