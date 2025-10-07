@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Order, ItemStatus, ITEM_STATUS_TRANSITIONS, ORDER_STATUS_TRANSITIONS } from '@/types';
 
 interface OrderDetailsProps {
@@ -12,7 +13,8 @@ interface OrderDetailsProps {
 }
 
 export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOnly = false }: OrderDetailsProps) {
-  const { language, markOrderAsPaid, orders } = useAppStore();
+  const { markOrderAsPaid, orders } = useAppStore();
+  const { t, language } = useTranslation();
   const [localOrder, setLocalOrder] = useState(order);
   
   // Update local order when the order in store changes
@@ -39,20 +41,20 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
     <div>
       <div className="bg-white rounded-lg p-4 mb-6 shadow-md">
         <h2 className="text-mobile-2xl font-bold mb-4">
-          {language === 'es' ? 'Detalle del Pedido' : 'Order Details'}
+          {t('orders.orderDetails')}
         </h2>
         
         <div className="grid grid-cols-2 gap-4 text-mobile-lg">
           <div>
-            <strong>{language === 'es' ? 'Mesa:' : 'Table:'}</strong>
+            <strong>{t('common.table')}:</strong>
             <br />{localOrder.tableNumber}
           </div>
           <div>
-            <strong>{language === 'es' ? 'Camarero:' : 'Waiter:'}</strong>
+            <strong>{t('common.waiter')}</strong>
             <br />{localOrder.waiterName}
           </div>
           <div>
-            <strong>{language === 'es' ? 'Estado:' : 'Status:'}</strong>
+            <strong>{t('common.status')}</strong>
             <br />
             <span className={`status-badge ${
               localOrder.status === 'TO_CONFIRM' ? 'status-to-confirm' :
@@ -64,7 +66,7 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
             </span>
           </div>
           <div>
-            <strong>{language === 'es' ? 'Hora:' : 'Time:'}</strong>
+            <strong>{t('common.time')}</strong>
             <br />{new Date(localOrder.createdAt).toLocaleTimeString('es-ES')}
           </div>
         </div>
@@ -73,7 +75,7 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
           <div className="mt-4 p-3 bg-yellow-100 rounded-lg border-l-4 border-yellow-400">
             <p className="text-sm font-semibold text-yellow-800 flex items-center">
               <span className="mr-2">⚠️</span>
-              {language === 'es' ? 'TODO JUNTO - Servir todos los items al mismo tiempo' : 'ALL TOGETHER - Serve all items at the same time'}
+              {t('orders.allTogetherWarning')}
             </p>
           </div>
         )}
@@ -81,7 +83,7 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
       
       <div className="space-y-4 mb-6">
         <h3 className="text-mobile-xl font-bold">
-          {language === 'es' ? 'Items del Pedido:' : 'Order Items:'}
+          {t('orders.orderItems')}
         </h3>
         
         {localOrder.items.map((item, index) => {
@@ -130,7 +132,7 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
               {item.customizations.length > 0 && (
                 <div className="mb-3">
                   <p className="text-sm font-semibold text-gray-700 mb-1">
-                    {language === 'es' ? 'Personalizaciones:' : 'Customizations:'}
+                    {t('common.customizations')}
                   </p>
                   <div className="flex flex-wrap gap-1">
                     {item.customizations.map(customization => (
@@ -145,7 +147,7 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
               {item.customText && (
                 <div className="bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
                   <p className="text-sm font-semibold text-yellow-800 mb-1">
-                    {language === 'es' ? 'Nota Especial:' : 'Special Note:'}
+                    {t('orders.specialNote')}
                   </p>
                   <p className="text-sm text-yellow-700">{item.customText}</p>
                 </div>
@@ -158,7 +160,7 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
       <div className="bg-white rounded-lg p-4 shadow-md">
         <div className="flex justify-between items-center text-mobile-xl mb-4">
           <span className="font-bold">
-            {language === 'es' ? 'Total:' : 'Total:'}
+            {t('common.total')}
           </span>
           <span className="font-bold text-primary-600">
             €{total.toFixed(2)}
@@ -170,7 +172,7 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
             onClick={() => markOrderAsPaid(localOrder.id)}
             className="w-full mobile-button-success"
           >
-            {language === 'es' ? 'Marcar como Pagado' : 'Mark as Paid'}
+            {t('orders.markAsPaid')}
           </button>
         )}
       </div>

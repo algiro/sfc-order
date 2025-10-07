@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslation } from '@/hooks/useTranslation';
 import { MainSection } from '@/types';
 import TomarSection from '@/components/TomarSection';
 import ListaSection from '@/components/ListaSection';
@@ -13,7 +14,8 @@ import apiService from '@/services/api';
 export default function Home() {
   const [currentSection, setCurrentSection] = useState<MainSection | null>(null);
   const [debugMode, setDebugMode] = useState(false);
-  const { setMenuCategories, language, setLanguage, loadUsersFromAPI, loadTablesFromAPI, loadMenuCategoriesFromAPI, users, tables, menuCategories } = useAppStore();
+  const { setMenuCategories, setLanguage, loadUsersFromAPI, loadTablesFromAPI, loadMenuCategoriesFromAPI, users, tables, menuCategories } = useAppStore();
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     // Load data from backend API
@@ -38,13 +40,13 @@ export default function Home() {
             onClick={() => setCurrentSection(null)}
             className="mobile-button-secondary px-4 py-2 h-auto"
           >
-            ← {language === 'es' ? 'Volver' : 'Back'}
+            ← {t('common.back')}
           </button>
           <button
             onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
             className="mobile-button-secondary px-4 py-2 h-auto text-sm"
           >
-            {language === 'es' ? '🇺🇸 EN' : '🇪🇸 ES'}
+            {t('navigation.languageToggle')}
           </button>
         </div>
         
@@ -67,7 +69,7 @@ export default function Home() {
           onClick={() => setLanguage(language === 'es' ? 'en' : 'es')}
           className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium"
         >
-          {language === 'es' ? '🇺🇸 EN' : '🇪🇸 ES'}
+          {t('navigation.languageToggle')}
         </button>
       </div>
       
@@ -78,7 +80,7 @@ export default function Home() {
         >
           <div className="text-4xl mb-2">📝</div>
           <div className="text-mobile-lg font-bold text-center">
-            {language === 'es' ? 'Tomar Pedidos' : 'Take Orders'}
+            {t('home.takeOrders')}
           </div>
         </button>
         
@@ -88,7 +90,7 @@ export default function Home() {
         >
           <div className="text-4xl mb-2">�‍🍳</div>
           <div className="text-mobile-lg font-bold text-center">
-            {language === 'es' ? 'Lista Cocina' : 'Kitchen List'}
+            {t('home.kitchenList')}
           </div>
         </button>
         
@@ -98,7 +100,7 @@ export default function Home() {
         >
           <div className="text-4xl mb-2">🍽️</div>
           <div className="text-mobile-lg font-bold text-center">
-            {language === 'es' ? 'Mesas' : 'Tables'}
+            {t('home.tables')}
           </div>
         </button>
         
@@ -108,13 +110,13 @@ export default function Home() {
         >
           <div className="text-4xl mb-2">📋</div>
           <div className="text-mobile-lg font-bold text-center">
-            {language === 'es' ? 'Archivo' : 'Archive'}
+            {t('home.archive')}
           </div>
         </button>
       </div>
 
       <div className="mt-8 text-center text-sm text-gray-500">
-        <p>{language === 'es' ? 'Sistema de Gestión de Pedidos' : 'Order Management System'}</p>
+        <p>{t('home.systemTitle')}</p>
         <p className="mt-1">v1.0.0</p>
         
         {/* Debug section */}

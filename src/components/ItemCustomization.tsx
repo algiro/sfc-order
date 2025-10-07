@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
+import { useTranslation } from '@/hooks/useTranslation';
 import { MenuItem, MenuCategory, Fruit } from '@/types';
 import apiService from '@/services/api';
 
@@ -14,7 +15,8 @@ interface ItemCustomizationProps {
 export default function ItemCustomization({ item, category, onBack }: ItemCustomizationProps) {
   const [selectedCustomizations, setSelectedCustomizations] = useState<string[]>([]);
   const [customText, setCustomText] = useState('');
-  const { language, addItemToOrder } = useAppStore();
+  const { addItemToOrder } = useAppStore();
+  const { t, language } = useTranslation();
 
   console.log('ItemCustomization - Item:', item);
   console.log('ItemCustomization - customization_type:', item.customization_type);
@@ -61,7 +63,7 @@ export default function ItemCustomization({ item, category, onBack }: ItemCustom
 
       <div className="mb-6">
         <h4 className="text-mobile-lg font-semibold mb-3">
-          {language === 'es' ? 'Personalizaciones:' : 'Customizations:'}
+          {t('common.customizations')}
         </h4>
         
         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -82,14 +84,14 @@ export default function ItemCustomization({ item, category, onBack }: ItemCustom
 
         <div className="mb-4">
           <label className="block text-mobile-lg font-semibold mb-2">
-            {language === 'es' ? 'Personalización especial:' : 'Special customization:'}
+            {t('menu.specialCustomization')}
           </label>
           <textarea
             value={customText}
             onChange={(e) => setCustomText(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-lg text-mobile-lg"
             rows={3}
-            placeholder={language === 'es' ? 'Escriba aquí...' : 'Write here...'}
+            placeholder={t('menu.writePlaceholder')}
           />
         </div>
       </div>
@@ -99,14 +101,14 @@ export default function ItemCustomization({ item, category, onBack }: ItemCustom
           onClick={onBack}
           className="mobile-button-secondary flex-1"
         >
-          {language === 'es' ? 'Cancelar' : 'Cancel'}
+          {t('common.cancel')}
         </button>
         
         <button
           onClick={handleConfirm}
           className="mobile-button-success flex-1"
         >
-          {language === 'es' ? 'Confirmar' : 'Confirm'}
+          {t('common.confirm')}
         </button>
       </div>
     </div>

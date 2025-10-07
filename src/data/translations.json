@@ -1,0 +1,298 @@
+{
+  "common": {
+    "back": {
+      "es": "Volver",
+      "en": "Back"
+    },
+    "cancel": {
+      "es": "Cancelar",
+      "en": "Cancel"
+    },
+    "confirm": {
+      "es": "Confirmar",
+      "en": "Confirm"
+    },
+    "loading": {
+      "es": "Cargando...",
+      "en": "Loading..."
+    },
+    "total": {
+      "es": "Total:",
+      "en": "Total:"
+    },
+    "table": {
+      "es": "Mesa",
+      "en": "Table"
+    },
+    "waiter": {
+      "es": "Camarero:",
+      "en": "Waiter:"
+    },
+    "status": {
+      "es": "Estado:",
+      "en": "Status:"
+    },
+    "time": {
+      "es": "Hora:",
+      "en": "Time:"
+    },
+    "items": {
+      "es": "items",
+      "en": "items"
+    },
+    "more": {
+      "es": "más",
+      "en": "more"
+    },
+    "customizations": {
+      "es": "Personalizaciones:",
+      "en": "Customizations:"
+    },
+    "note": {
+      "es": "Nota:",
+      "en": "Note:"
+    },
+    "paid": {
+      "es": "Pagado",
+      "en": "Paid"
+    }
+  },
+  "navigation": {
+    "languageToggle": {
+      "es": "🇺🇸 EN",
+      "en": "🇪🇸 ES"
+    },
+    "backToCategories": {
+      "es": "Volver a Categorías",
+      "en": "Back to Categories"
+    },
+    "backToItems": {
+      "es": "Volver a Items",
+      "en": "Back to Items"
+    },
+    "backToList": {
+      "es": "Volver a Lista",
+      "en": "Back to List"
+    },
+    "backToTables": {
+      "es": "Volver a Mesas",
+      "en": "Back to Tables"
+    },
+    "backToTable": {
+      "es": "Volver a Mesa",
+      "en": "Back to Table"
+    },
+    "backToArchive": {
+      "es": "Volver al Archivo",
+      "en": "Back to Archive"
+    },
+    "changeTable": {
+      "es": "Cambiar Mesa",
+      "en": "Change Table"
+    },
+    "newTable": {
+      "es": "Nueva Mesa",
+      "en": "New Table"
+    }
+  },
+  "home": {
+    "systemTitle": {
+      "es": "Sistema de Gestión de Pedidos",
+      "en": "Order Management System"
+    },
+    "takeOrders": {
+      "es": "Tomar Pedidos",
+      "en": "Take Orders"
+    },
+    "kitchenList": {
+      "es": "Lista Cocina",
+      "en": "Kitchen List"
+    },
+    "tables": {
+      "es": "Mesas",
+      "en": "Tables"
+    },
+    "archive": {
+      "es": "Archivo",
+      "en": "Archive"
+    }
+  },
+  "orders": {
+    "selectTable": {
+      "es": "Seleccionar Mesa",
+      "en": "Select Table"
+    },
+    "selectWaiter": {
+      "es": "Seleccionar Camarero",
+      "en": "Select Waiter"
+    },
+    "allTogether": {
+      "es": "Todo junto (servir al mismo tiempo)",
+      "en": "All together (serve at the same time)"
+    },
+    "allTogetherWarning": {
+      "es": "TODO JUNTO - Servir todos los items al mismo tiempo",
+      "en": "ALL TOGETHER - Serve all items at the same time"
+    },
+    "continueAdding": {
+      "es": "Seguir Añadiendo",
+      "en": "Continue Adding"
+    },
+    "viewOrder": {
+      "es": "Ver Pedido",
+      "en": "View Order"
+    },
+    "orderSummary": {
+      "es": "Resumen del Pedido",
+      "en": "Order Summary"
+    },
+    "orderDetails": {
+      "es": "Detalle del Pedido",
+      "en": "Order Details"
+    },
+    "orderItems": {
+      "es": "Items del Pedido:",
+      "en": "Order Items:"
+    },
+    "sendOrder": {
+      "es": "Enviar Pedido",
+      "en": "Send Order"
+    },
+    "noCurrentOrder": {
+      "es": "No hay pedido actual",
+      "en": "No current order"
+    },
+    "specialNote": {
+      "es": "Nota Especial:",
+      "en": "Special Note:"
+    },
+    "markAsPaid": {
+      "es": "Marcar como Pagado",
+      "en": "Mark as Paid"
+    },
+    "order": {
+      "es": "Pedido",
+      "en": "Order"
+    }
+  },
+  "menu": {
+    "selectCategory": {
+      "es": "Seleccionar Categoría",
+      "en": "Select Category"
+    },
+    "noItemsAvailable": {
+      "es": "No hay items disponibles",
+      "en": "No items available"
+    },
+    "specialCustomization": {
+      "es": "Personalización especial:",
+      "en": "Special customization:"
+    },
+    "writePlaceholder": {
+      "es": "Escriba aquí...",
+      "en": "Write here..."
+    },
+    "addToOrder": {
+      "es": "Añadir al Pedido",
+      "en": "Add to Order"
+    }
+  },
+  "bowlBuilder": {
+    "chooseBase": {
+      "es": "1. Elige tu base:",
+      "en": "1. Choose your base:"
+    },
+    "chooseCereal": {
+      "es": "2. Elige tu cereal:",
+      "en": "2. Choose your cereal:"
+    },
+    "chooseFruits": {
+      "es": "3. Elige hasta 3 frutas",
+      "en": "3. Choose up to 3 fruits"
+    },
+    "additionalCustomizations": {
+      "es": "Personalizaciones adicionales:",
+      "en": "Additional customizations:"
+    },
+    "validationError": {
+      "es": "Por favor selecciona base, cereal y al menos una fruta",
+      "en": "Please select base, cereal and at least one fruit"
+    }
+  },
+  "smoothieBuilder": {
+    "chooseSize": {
+      "es": "1. Elige el tamaño:",
+      "en": "1. Choose size:"
+    },
+    "ingredients": {
+      "es": "2. Ingredientes:",
+      "en": "2. Ingredients:"
+    },
+    "chooseFruits": {
+      "es": "2. Elige hasta 3 frutas",
+      "en": "2. Choose up to 3 fruits"
+    },
+    "customizations": {
+      "es": "3. Personalizaciones:",
+      "en": "3. Customizations:"
+    },
+    "validationError": {
+      "es": "Por favor selecciona al menos una fruta",
+      "en": "Please select at least one fruit"
+    }
+  },
+  "kitchen": {
+    "orderListKitchen": {
+      "es": "Lista de Pedidos - Cocina",
+      "en": "Order List - Kitchen"
+    },
+    "noConfirmedOrders": {
+      "es": "No hay pedidos confirmados",
+      "en": "No confirmed orders"
+    }
+  },
+  "tables": {
+    "tableStatus": {
+      "es": "Estado de las Mesas",
+      "en": "Table Status"
+    },
+    "noTablesConfigured": {
+      "es": "No hay mesas configuradas",
+      "en": "No tables configured"
+    },
+    "tableTotal": {
+      "es": "Total Mesa:",
+      "en": "Table Total:"
+    },
+    "noOrdersForTable": {
+      "es": "No hay pedidos para esta mesa",
+      "en": "No orders for this table"
+    },
+    "active": {
+      "es": "activos",
+      "en": "active"
+    }
+  },
+  "archive": {
+    "orderArchive": {
+      "es": "Archivo de Pedidos",
+      "en": "Order Archive"
+    },
+    "selectDate": {
+      "es": "Seleccionar Fecha:",
+      "en": "Select Date:"
+    },
+    "dailySummary": {
+      "es": "Resumen del Día",
+      "en": "Daily Summary"
+    },
+    "totalOrders": {
+      "es": "Total Pedidos:",
+      "en": "Total Orders:"
+    },
+    "totalRevenue": {
+      "es": "Ingresos Total:",
+      "en": "Total Revenue:"
+    }
+  }
+}
