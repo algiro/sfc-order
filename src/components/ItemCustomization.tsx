@@ -304,7 +304,7 @@ function BowlBuilderInline({ item, onBack, language, addItemToOrder }: {
               onClick={() => toggleCustomization(customization)}
               className={`p-3 rounded-lg text-sm transition-colors ${
                 selectedCustomizations.includes(customization)
-                  ? 'bg-secondary-500 text-white'
+                  ? 'bg-primary-500 text-white'
                   : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
               }`}
             >
@@ -521,7 +521,7 @@ function SmoothieBuilderInline({ item, onBack, language, addItemToOrder, isCusto
               onClick={() => toggleCustomization(customization)}
               className={`p-3 rounded-lg text-sm transition-colors ${
                 selectedCustomizations.includes(customization)
-                  ? 'bg-secondary-500 text-white'
+                  ? 'bg-primary-500 text-white'
                   : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
               }`}
             >
