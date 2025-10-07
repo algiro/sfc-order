@@ -55,9 +55,14 @@ class SFCOrderServer {
         this.app.use(helmet());
         
         // CORS - Allow frontend access
+        const corsOrigin = process.env.CORS_ORIGIN || process.env.FRONTEND_URL || 'http://localhost:3000';
+        console.log('🔒 CORS origin:', corsOrigin);
+        
         this.app.use(cors({
-            origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-            credentials: true
+            origin: corsOrigin,
+            credentials: true,
+            methods: (process.env.CORS_METHODS || 'GET,POST,PUT,DELETE,OPTIONS').split(','),
+            allowedHeaders: (process.env.CORS_HEADERS || 'Content-Type,Authorization,X-Requested-With').split(',')
         }));
         
         // Rate limiting

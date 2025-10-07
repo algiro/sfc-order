@@ -21,9 +21,15 @@ export default function OrderSummary({ onBackToMenu }: OrderSummaryProps) {
 
   const total = currentOrder.items.reduce((sum, item) => sum + item.menuItem.price, 0);
 
-  const handleConfirmOrder = () => {
-    confirmOrder();
-    // Navigate back to main or show success message
+  const handleConfirmOrder = async () => {
+    try {
+      await confirmOrder();
+      // Navigate back to main or show success message
+    } catch (error) {
+      console.error('Failed to confirm order:', error);
+      // Show error message but still allow UI to continue
+      alert('Error al confirmar pedido. Se guardó localmente.');
+    }
   };
 
   return (

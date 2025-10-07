@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone', // Required for Docker production builds
+  basePath: '/orders', // Set base path for production deployment
+  assetPrefix: '/orders', // Ensure assets are loaded from correct path
   eslint: {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.

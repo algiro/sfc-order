@@ -30,16 +30,21 @@ interface AppState {
   // Orders
   orders: Order[];
   currentOrder: Order | null;
+  lastOrderSync: Date | null;
+  
+  // Order API integration
+  loadOrdersFromAPI: () => Promise<void>;
+  syncOrders: () => Promise<void>;
   
   // Order management
   createOrder: (tableNumber: number, waiterId: string, waiterName: string, todoJunto?: boolean) => void;
   addItemToOrder: (menuItem: MenuItem, customizations: string[], customText?: string) => void;
   setOrderTodoJunto: (todoJunto: boolean) => void;
-  confirmOrder: () => void;
-  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
-  updateItemStatus: (orderId: string, itemId: string, status: ItemStatus) => void;
-  markOrderAsPaid: (orderId: string) => void;
-  cancelOrder: (orderId: string) => void;
+  confirmOrder: () => Promise<void>;
+  updateOrderStatus: (orderId: string, status: OrderStatus) => Promise<void>;
+  updateItemStatus: (orderId: string, itemId: string, status: ItemStatus) => Promise<void>;
+  markOrderAsPaid: (orderId: string) => Promise<void>;
+  cancelOrder: (orderId: string) => Promise<void>;
   
   // Getters
   getOrdersByStatus: (status: OrderStatus) => Order[];
@@ -132,6 +137,29 @@ export const useAppStore = create<AppState>()(
       // Orders
       orders: [],
       currentOrder: null,
+      lastOrderSync: null,
+      
+      // Order API integration
+      loadOrdersFromAPI: async () => {
+        try {
+          console.log('Loading orders from API...');
+          const { orders } = await import('@/services/api').then(mod => mod.default.getOrders());
+          console.log('Loaded orders from API:', orders);
+          set({ orders, lastOrderSync: new Date() });
+        } catch (error) {
+          console.error('Failed to load orders from API:', error);
+        }
+      },
+      
+      syncOrders: async () => {
+        try {
+          // Load fresh orders from API
+          const { orders } = await import('@/services/api').then(mod => mod.default.getOrders());
+          set({ orders, lastOrderSync: new Date() });
+        } catch (error) {
+          console.error('Failed to sync orders from API:', error);
+        }
+      },
       
       // Order management
       createOrder: (tableNumber, waiterId, waiterName, todoJunto = false) => {
@@ -183,92 +211,229 @@ export const useAppStore = create<AppState>()(
         set({ currentOrder: updatedOrder });
       },
       
-      confirmOrder: () => {
+      confirmOrder: async () => {
         const currentOrder = get().currentOrder;
         const orders = get().orders;
         
         if (!currentOrder || currentOrder.items.length === 0) return;
         
-        const confirmedOrder: Order = {
-          ...currentOrder,
-          status: 'CONFIRMED',
-          confirmedAt: new Date(),
-        };
-        
-        set({
-          orders: [...orders, confirmedOrder],
-          currentOrder: null,
-        });
-      },
-      
-      updateOrderStatus: (orderId, status) => {
-        set(state => {
-          const newOrders = state.orders.map(order => {
-            if (order.id === orderId) {
-              const updatedOrder = { ...order, status };
-              if (status === 'PREPARED') {
-                updatedOrder.preparedAt = new Date();
-              } else if (status === 'PAGADO') {
-                updatedOrder.paidAt = new Date();
-              }
-              return updatedOrder;
-            }
-            return order;
+        try {
+          // Prepare order data for API
+          const orderData = {
+            tableNumber: currentOrder.tableNumber,
+            waiterId: currentOrder.waiterId,
+            waiterName: currentOrder.waiterName,
+            todoJunto: currentOrder.todoJunto,
+            items: currentOrder.items.map(item => ({
+              menuItemId: item.menuItemId,
+              menuItem: item.menuItem,
+              customizations: item.customizations?.map(c => c.text) || [],
+              customText: item.customText,
+            })),
+          };
+          
+          // Save order to API
+          const { orderId } = await import('@/services/api').then(mod => mod.default.createOrder(orderData));
+          
+          const confirmedOrder: Order = {
+            ...currentOrder,
+            id: orderId, // Use the ID returned from API
+            status: 'CONFIRMED',
+            confirmedAt: new Date(),
+          };
+          
+          set({
+            orders: [...orders, confirmedOrder],
+            currentOrder: null,
           });
-          return { orders: newOrders };
-        });
+          
+          console.log('Order confirmed and saved to API:', orderId);
+        } catch (error) {
+          console.error('Failed to confirm order:', error);
+          // For now, still save locally even if API fails
+          const confirmedOrder: Order = {
+            ...currentOrder,
+            status: 'CONFIRMED',
+            confirmedAt: new Date(),
+          };
+          
+          set({
+            orders: [...orders, confirmedOrder],
+            currentOrder: null,
+          });
+        }
       },
       
-      markOrderAsPaid: (orderId) => {
-        set(state => ({
-          orders: state.orders.map(order =>
-            order.id === orderId 
-              ? { ...order, status: 'PAGADO' as OrderStatus, paidAt: new Date() }
-              : order
-          )
-        }));
-      },
-      
-      updateItemStatus: (orderId, itemId, status) => {
-        set(state => ({
-          orders: state.orders.map(order => {
-            if (order.id === orderId) {
-              const updatedItems = order.items.map(item => 
-                item.id === itemId ? { ...item, status } : item
-              );
-              
-              // Check if all items are prepared to update order status
-              const allItemsPrepared = updatedItems.every(item => 
-                item.status === 'PREPARED' || item.status === 'CANCELED'
-              );
-              
-              const hasAtLeastOnePrepared = updatedItems.some(item => 
-                item.status === 'PREPARED'
-              );
-              
-              let orderStatus = order.status;
-              if (allItemsPrepared && hasAtLeastOnePrepared && order.status === 'CONFIRMED') {
-                orderStatus = 'PREPARED';
+      updateOrderStatus: async (orderId, status) => {
+        try {
+          // Update status via API
+          await import('@/services/api').then(mod => mod.default.updateOrderStatus(orderId, status));
+          
+          // Update local state
+          set(state => {
+            const newOrders = state.orders.map(order => {
+              if (order.id === orderId) {
+                const updatedOrder = { ...order, status };
+                if (status === 'PREPARED') {
+                  updatedOrder.preparedAt = new Date();
+                } else if (status === 'PAGADO') {
+                  updatedOrder.paidAt = new Date();
+                }
+                return updatedOrder;
               }
-              
-              return {
-                ...order,
-                items: updatedItems,
-                status: orderStatus,
-                preparedAt: orderStatus === 'PREPARED' ? new Date() : order.preparedAt,
-              };
-            }
-            return order;
-          })
-        }));
+              return order;
+            });
+            return { orders: newOrders };
+          });
+          
+          console.log('Order status updated:', orderId, status);
+        } catch (error) {
+          console.error('Failed to update order status:', error);
+          // Still update locally even if API fails
+          set(state => {
+            const newOrders = state.orders.map(order => {
+              if (order.id === orderId) {
+                const updatedOrder = { ...order, status };
+                if (status === 'PREPARED') {
+                  updatedOrder.preparedAt = new Date();
+                } else if (status === 'PAGADO') {
+                  updatedOrder.paidAt = new Date();
+                }
+                return updatedOrder;
+              }
+              return order;
+            });
+            return { orders: newOrders };
+          });
+        }
       },
       
-      cancelOrder: (orderId) => {
-        set(state => ({
-          orders: state.orders.map(order =>
-            order.id === orderId ? { ...order, status: 'CANCELED' } : order
-          )
-        }));
+      markOrderAsPaid: async (orderId) => {
+        try {
+          // Update status via API
+          await import('@/services/api').then(mod => mod.default.updateOrderStatus(orderId, 'PAGADO'));
+          
+          // Update local state
+          set(state => ({
+            orders: state.orders.map(order =>
+              order.id === orderId 
+                ? { ...order, status: 'PAGADO' as OrderStatus, paidAt: new Date() }
+                : order
+            )
+          }));
+          
+          console.log('Order marked as paid:', orderId);
+        } catch (error) {
+          console.error('Failed to mark order as paid:', error);
+          // Still update locally even if API fails
+          set(state => ({
+            orders: state.orders.map(order =>
+              order.id === orderId 
+                ? { ...order, status: 'PAGADO' as OrderStatus, paidAt: new Date() }
+                : order
+            )
+          }));
+        }
+      },
+      
+      updateItemStatus: async (orderId, itemId, status) => {
+        try {
+          // Update item status via API
+          await import('@/services/api').then(mod => mod.default.updateItemStatus(orderId, itemId, status));
+          
+          // Update local state
+          set(state => ({
+            orders: state.orders.map(order => {
+              if (order.id === orderId) {
+                const updatedItems = order.items.map(item => 
+                  item.id === itemId ? { ...item, status } : item
+                );
+                
+                // Check if all items are prepared to update order status
+                const allItemsPrepared = updatedItems.every(item => 
+                  item.status === 'PREPARED' || item.status === 'CANCELED'
+                );
+                
+                const hasAtLeastOnePrepared = updatedItems.some(item => 
+                  item.status === 'PREPARED'
+                );
+                
+                let orderStatus = order.status;
+                if (allItemsPrepared && hasAtLeastOnePrepared && order.status === 'CONFIRMED') {
+                  orderStatus = 'PREPARED';
+                }
+                
+                return {
+                  ...order,
+                  items: updatedItems,
+                  status: orderStatus,
+                  preparedAt: orderStatus === 'PREPARED' ? new Date() : order.preparedAt,
+                };
+              }
+              return order;
+            })
+          }));
+          
+          console.log('Item status updated:', orderId, itemId, status);
+        } catch (error) {
+          console.error('Failed to update item status:', error);
+          // Still update locally even if API fails
+          set(state => ({
+            orders: state.orders.map(order => {
+              if (order.id === orderId) {
+                const updatedItems = order.items.map(item => 
+                  item.id === itemId ? { ...item, status } : item
+                );
+                
+                // Check if all items are prepared to update order status
+                const allItemsPrepared = updatedItems.every(item => 
+                  item.status === 'PREPARED' || item.status === 'CANCELED'
+                );
+                
+                const hasAtLeastOnePrepared = updatedItems.some(item => 
+                  item.status === 'PREPARED'
+                );
+                
+                let orderStatus = order.status;
+                if (allItemsPrepared && hasAtLeastOnePrepared && order.status === 'CONFIRMED') {
+                  orderStatus = 'PREPARED';
+                }
+                
+                return {
+                  ...order,
+                  items: updatedItems,
+                  status: orderStatus,
+                  preparedAt: orderStatus === 'PREPARED' ? new Date() : order.preparedAt,
+                };
+              }
+              return order;
+            })
+          }));
+        }
+      },
+      
+      cancelOrder: async (orderId) => {
+        try {
+          // Cancel order via API
+          await import('@/services/api').then(mod => mod.default.cancelOrder(orderId));
+          
+          // Update local state
+          set(state => ({
+            orders: state.orders.map(order =>
+              order.id === orderId ? { ...order, status: 'CANCELED' } : order
+            )
+          }));
+          
+          console.log('Order canceled:', orderId);
+        } catch (error) {
+          console.error('Failed to cancel order:', error);
+          // Still update locally even if API fails
+          set(state => ({
+            orders: state.orders.map(order =>
+              order.id === orderId ? { ...order, status: 'CANCELED' } : order
+            )
+          }));
+        }
       },
       
       // Getters
@@ -311,10 +476,10 @@ export const useAppStore = create<AppState>()(
       name: 'sfc-order-storage',
       partialize: (state) => ({
         language: state.language,
-        // Don't persist users or menuCategories - always fetch from API
+        // Don't persist orders, users, or menuCategories - always fetch from API
+        // orders: state.orders,
         // users: state.users,
         // menuCategories: state.menuCategories,
-        orders: state.orders,
       }),
     }
   )

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useOrderSync } from '@/hooks/useOrderSync';
 import { MainSection } from '@/types';
 import TomarSection from '@/components/TomarSection';
 import ListaSection from '@/components/ListaSection';
@@ -14,8 +15,9 @@ import apiService from '@/services/api';
 export default function Home() {
   const [currentSection, setCurrentSection] = useState<MainSection | null>(null);
   const [debugMode, setDebugMode] = useState(false);
-  const { setMenuCategories, setLanguage, loadUsersFromAPI, loadTablesFromAPI, loadMenuCategoriesFromAPI, users, tables, menuCategories } = useAppStore();
+  const { setMenuCategories, setLanguage, loadUsersFromAPI, loadTablesFromAPI, loadMenuCategoriesFromAPI, users, tables, menuCategories, orders, loadOrdersFromAPI } = useAppStore();
   const { t, language } = useTranslation();
+  const { lastOrderSync, manualSync } = useOrderSync();
 
   useEffect(() => {
     // Load data from backend API
@@ -151,6 +153,17 @@ export default function Home() {
                 ))}
               </div>
               
+              <div className="mb-2">
+                <strong>Orders ({orders.length}):</strong>
+                {orders.slice(0, 3).map(o => (
+                  <div key={o.id} className="ml-2">• Table {o.tableNumber}: {o.status} ({o.items.length} items)</div>
+                ))}
+                {orders.length > 3 && <div className="ml-2">... and {orders.length - 3} more</div>}
+                <div className="ml-2 text-gray-400">
+                  Last sync: {lastOrderSync ? new Date(lastOrderSync).toLocaleTimeString() : 'Never'}
+                </div>
+              </div>
+              
               <div className="flex gap-2 mt-3">
                 <button
                   onClick={loadUsersFromAPI}
@@ -169,6 +182,18 @@ export default function Home() {
                   className="px-2 py-1 bg-purple-500 text-white rounded text-xs"
                 >
                   Reload Menu
+                </button>
+                <button
+                  onClick={loadOrdersFromAPI}
+                  className="px-2 py-1 bg-orange-500 text-white rounded text-xs"
+                >
+                  Reload Orders
+                </button>
+                <button
+                  onClick={manualSync}
+                  className="px-2 py-1 bg-yellow-500 text-white rounded text-xs"
+                >
+                  Sync Orders
                 </button>
                 <button
                   onClick={clearStorageAndReload}

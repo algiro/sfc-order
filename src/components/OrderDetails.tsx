@@ -8,7 +8,7 @@ import { Order, ItemStatus, ITEM_STATUS_TRANSITIONS, ORDER_STATUS_TRANSITIONS } 
 interface OrderDetailsProps {
   order: Order;
   onBack: () => void;
-  onUpdateItemStatus?: (orderId: string, itemId: string, status: ItemStatus) => void;
+  onUpdateItemStatus?: (orderId: string, itemId: string, status: ItemStatus) => Promise<void>;
   readOnly?: boolean;
 }
 
@@ -25,9 +25,14 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
     }
   }, [orders, order.id]);
   
-  const handleUpdateItemStatus = (itemId: string, newStatus: ItemStatus) => {
+  const handleUpdateItemStatus = async (itemId: string, newStatus: ItemStatus) => {
     if (onUpdateItemStatus && !readOnly) {
-      onUpdateItemStatus(localOrder.id, itemId, newStatus);
+      try {
+        await onUpdateItemStatus(localOrder.id, itemId, newStatus);
+      } catch (error) {
+        console.error('Failed to update item status:', error);
+        alert('Error al actualizar estado. Se guardó localmente.');
+      }
     }
   };
   
@@ -114,7 +119,7 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
                       {availableTransitions.map(transition => (
                         <button
                           key={transition}
-                          onClick={() => handleUpdateItemStatus(item.id, transition)}
+                          onClick={async () => await handleUpdateItemStatus(item.id, transition)}
                           className={`w-full text-xs py-1 px-2 rounded font-medium ${
                             transition === 'PREPARED' ? 'bg-success-500 hover:bg-success-600 text-white' :
                             transition === 'CANCELED' ? 'bg-error-500 hover:bg-error-600 text-white' :
@@ -169,7 +174,14 @@ export default function OrderDetails({ order, onBack, onUpdateItemStatus, readOn
         
         {!readOnly && localOrder.status === 'PREPARED' && (
           <button
-            onClick={() => markOrderAsPaid(localOrder.id)}
+            onClick={async () => {
+              try {
+                await markOrderAsPaid(localOrder.id);
+              } catch (error) {
+                console.error('Failed to mark order as paid:', error);
+                alert('Error al marcar como pagado. Se guardó localmente.');
+              }
+            }}
             className="w-full mobile-button-success"
           >
             {t('orders.markAsPaid')}

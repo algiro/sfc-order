@@ -1,12 +1,36 @@
 import { Order, OrderItem, User, MenuItem, MenuCategory, Fruit, APICategoryResponse, APIItemResponse } from '../types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+// Try to get API URL from various sources
+const getAPIBaseURL = (): string => {
+  // 1. Runtime environment variable (if available in browser)
+  if (typeof window !== 'undefined' && (window as any).__NEXT_PUBLIC_API_URL__) {
+    return (window as any).__NEXT_PUBLIC_API_URL__;
+  }
+  
+  // 2. Build-time environment variable
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  
+  // 3. Detect if we're running in production based on hostname
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    return `${window.location.protocol}//${window.location.host}/orders`;
+  }
+  
+  // 4. Default for local development
+  return 'http://localhost:3001';
+};
+
+const API_BASE_URL = getAPIBaseURL();
 
 class APIService {
   private baseURL: string;
 
   constructor() {
     this.baseURL = `${API_BASE_URL}/api`;
+    
+    // Debug logging
+    console.log('🔧 API Service initialized with base URL:', this.baseURL);
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {

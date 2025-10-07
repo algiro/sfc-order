@@ -128,9 +128,14 @@ export default function MesasSection() {
                     
                     {order.status === 'PREPARED' && (
                       <button
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          markOrderAsPaid(order.id);
+                          try {
+                            await markOrderAsPaid(order.id);
+                          } catch (error) {
+                            console.error('Failed to mark order as paid:', error);
+                            alert('Error al marcar como pagado. Se guardó localmente.');
+                          }
                         }}
                         className="mt-2 w-full bg-success-500 hover:bg-success-600 text-white text-xs py-1 px-2 rounded font-medium"
                       >

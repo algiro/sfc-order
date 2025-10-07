@@ -166,7 +166,7 @@ class JSONDatabase {
             table_number: orderData.tableNumber,
             waiter_id: orderData.waiterId,
             waiter_name: orderData.waiterName,
-            status: 'TO_CONFIRM',
+            status: 'CONFIRMED',
             todo_junto: orderData.todoJunto || false,
             items: orderData.items.map(item => ({
                 id: uuidv4(),
@@ -179,7 +179,7 @@ class JSONDatabase {
             })),
             total_amount: orderData.items.reduce((total, item) => total + item.menuItem.price, 0),
             created_at: new Date().toISOString(),
-            confirmed_at: null,
+            confirmed_at: new Date().toISOString(),
             prepared_at: null,
             paid_at: null
         };
