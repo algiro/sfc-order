@@ -76,25 +76,7 @@ $RECYCLE.BIN/
 .dockerignore
 
 # Deployment and server configuration files
-docker-compose.server.yml
-docker-compose.production.yml
-docker-compose.registry.yml
-nginx.conf.production
-nginx.server.conf
-app-gateway-nginx.conf
-nginx-*.conf
 deployment-package/
-DEPLOYMENT*.md
-REGISTRY-DEPLOYMENT.md
-
-# Build and deployment scripts (environment specific)
-deploy.sh
-deploy.bat
-deploy-registry.sh
-deploy-registry.bat
-build-and-push.bat
-docker-build-and-push.bat
-docker-build-and-push.sh
 
 # Vercel
 .vercel

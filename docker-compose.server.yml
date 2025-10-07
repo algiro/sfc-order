@@ -1,0 +1,97 @@
+services:
+  # Existing Shop Flow application (KEEP ORIGINAL CONFIGURATION)
+  web:
+    container_name: shop-flow-web
+    environment:
+      APP_VERSION: "0.1.1"
+      MOV_PERSISTENCY_TYPE: "LiteDB"
+      HEALTH_CHECK_URL: ${HEALTH_CHECK_URL}
+      GDRIVE_CREDENTIAL_PATH: ${GDRIVE_CREDENTIAL_PATH}
+      GDRIVE_PENDING_FOLDER_ID: ${GDRIVE_PENDING_FOLDER_ID}
+      GDRIVE_IMPORTED_FOLDER_ID: ${GDRIVE_IMPORTED_FOLDER_ID}
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+    image: algiro/shop-flow-net:latest
+    volumes:
+      - type: bind
+        source: ${SHOP_FLOW_MOVS_VOLUME}
+        target: /data/shopFlowMovs
+    ports: []
+    networks:
+      - microservices
+
+  # NEW: SFC Order Frontend
+  sfc-order-frontend:
+    container_name: sfc-order-frontend
+    image: algiro/sfc-order-frontend:latest
+    expose:
+      - "3000"
+    networks:
+      - microservices
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://app.soulfoodcafe.es/orders
+    depends_on:
+      - sfc-order-backend
+    restart: unless-stopped
+
+  # NEW: SFC Order Backend
+  sfc-order-backend:
+    container_name: sfc-order-backend
+    image: algiro/sfc-order-backend:latest
+    expose:
+      - "3001"
+    networks:
+      - microservices
+    environment:
+      - NODE_ENV=production
+      - CORS_ORIGIN=https://app.soulfoodcafe.es
+      - CORS_METHODS=GET,POST,PUT,DELETE,OPTIONS
+      - CORS_HEADERS=Content-Type,Authorization,X-Requested-With
+    volumes:
+      # Mount host directory for persistent data
+      - type: bind
+        source: ${SFC_ORDER_DATA_PATH:-./sfc-order-data}
+        target: /app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Existing nginx gateway (UPDATED TO INCLUDE SFC ORDER ROUTING)
+  app-gateway:
+    container_name: nginx
+    build:
+      context: ./app-gateway
+      dockerfile: Dockerfile
+    depends_on:
+      - web
+      - sfc-order-frontend
+      - sfc-order-backend
+    ports:
+      - 443:443
+    volumes:
+      - ./nginx-certs:/etc/nginx/certs
+      - ./.htpasswd:/etc/nginx/.htpasswd
+    networks:
+      - microservices
+
+networks:
+  microservices:
+
+volumes:
+  shopFlowMovs:
+  certs:
+  sfc-order-data:  # NEW: Volume for SFC Order data
+
+secrets:
+  oauth2_proxy_client_id:
+    environment: OAUTH2_PROXY_CLIENT_ID
+  oauth2_proxy_client_secret:
+    environment: OAUTH2_PROXY_CLIENT_SECRET
+  oauth2_proxy_cookie_secret:
+    environment: OAUTH2_PROXY_COOKIE_SECRET
+  oauth2_proxy_redirect_url:
+    environment: OAUTH2_PROXY_REDIRECT_URL
